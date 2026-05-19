@@ -1,3 +1,3 @@
-"""session-lattice: materialized-view service over Claude session data."""
+from session_lattice._version import __version__
 
-__version__ = "0.0.0"
+__all__ = ["__version__"]

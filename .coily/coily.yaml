@@ -15,6 +15,9 @@ commands:
   test:
     run: make test
     description: Run pytest. (No tests yet; placeholder until first view lands.)
+  brew-resources:
+    run: bash scripts/brew-resources.sh
+    description: Print Homebrew resource blocks for the synced uv venv. Pipe between the BEGIN/END RESOURCES markers in Formula/session-lattice.rb.
 
 # Catalog metadata for the cross-repo knowledge graph.
 # Schema: coilysiren/agentic-os-kai#420 (tracker).

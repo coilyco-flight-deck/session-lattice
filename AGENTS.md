@@ -18,7 +18,9 @@ Two caches stack here: repo-recall's per-source TTLs and session-lattice's per-v
 
 ## Release + post-push
 
-Push to `main` -> `.github/workflows/release.yml`: `mathieudutour/github-tag-action` computes semver (`default_bump: patch`, conventional commits drive minor/major), tags + cuts a GH Release. No tap dispatch (see #17 - direct-repo install). `Formula/session-lattice.rb` is the source of truth here; brew picks up the new tag from this repo on the next `brew upgrade`.
+Push to `main` -> `.github/workflows/release.yml`: `mathieudutour/github-tag-action` computes semver (`default_bump: patch`, conventional commits drive minor/major), tags + cuts a GH Release, then `bump-formula` rewrites the formula's url+tag+revision line via the Contents API and pushes it back to main with a skip-CI marker. No tap dispatch (see #17 - direct-repo install). `Formula/session-lattice.rb` is the source of truth here; brew picks up the new tag from this repo on the next `brew upgrade`.
+
+Never write the literal skip-CI token in a commit message body or you'll silently disable the release workflow on that push. GitHub greps the entire message, not just the subject line. Quote it as "skip-ci marker" or "skip CI" without brackets if you need to describe it.
 
 Post-push: verify CI at +300s (`coily ops gh run list --repo coilysiren/session-lattice --limit 1`). Python virtualenv install is slower than a Go binary, so don't poll harder than that. Once `completed/success`: `brew upgrade coilysiren/session-lattice/session-lattice` then `brew services restart session-lattice`. Confirm the service is back by hitting `localhost:7778/healthz` and checking the version field reports the just-released tag. Skip the whole loop for docs-only pushes.
 

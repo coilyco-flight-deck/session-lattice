@@ -1,7 +1,7 @@
 [project]
 name = "session-lattice"
 version = "0.0.0"
-description = "Materialized-view service over Claude session data. Pulls from repo-recall, maintains views via Feldera, serves over HTTP."
+description = "Materialized-view service over Claude session data. Pulls from repo-recall, maintains views in embedded DuckDB, serves over HTTP."
 readme = "README.md"
 requires-python = ">=3.13"
 license = { text = "MIT" }

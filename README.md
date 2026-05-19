@@ -5,7 +5,7 @@ Materialized-view service over Claude session data.
 Three-layer architecture across coilysiren/*:
 
 - [coilysiren/repo-recall](https://github.com/coilysiren/repo-recall) - joins, searches, and caches over primary sources (Claude session JSONL, git log, GitHub). Authoritative store.
-- **session-lattice** (this repo) - pulls from repo-recall on a tick, maintains a lattice of materialized views via Feldera (DBSP, incremental view maintenance), serves view reads over HTTP.
+- **session-lattice** (this repo) - pulls from repo-recall on a tick, maintains a catalog of materialized views in DuckDB (embedded, columnar), serves view reads over HTTP on `localhost:7778`.
 - [coilysiren/luca](https://github.com/coilysiren/luca) - stateless. Queries session-lattice and turns the views into insights.
 
 See [docs/architecture.md](docs/architecture.md) for the design rationale.
@@ -14,7 +14,7 @@ See [docs/architecture.md](docs/architecture.md) for the design rationale.
 
 Pre-cable. Repo scaffolded, no service yet. Replaces the archived `coilysiren/otel-a2a-relay`.
 
-The view-inspection surface is Feldera's built-in web console (ad-hoc SQL against materialized views in a running pipeline). No separate dashboard layer.
+The view-inspection surface is the DuckDB UI extension, attached read-only to the live database file (`duckdb -readonly ~/.session-lattice/session-lattice.duckdb -ui`). Service runs concurrently. No separate dashboard layer.
 
 ## See also
 

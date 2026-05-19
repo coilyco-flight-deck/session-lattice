@@ -15,21 +15,6 @@ commands:
   test:
     run: make test
     description: Run pytest. (No tests yet; placeholder until first view lands.)
-  stack-up:
-    run: make stack-up
-    description: Bring up the local Feldera pipeline-manager (port 8080).
-  stack-down:
-    run: make stack-down
-    description: Stop the Feldera container. Ephemeral state still in the container until stack-wipe.
-  stack-status:
-    run: make stack-status
-    description: docker compose ps + healthz probe.
-  stack-logs:
-    run: make stack-logs
-    description: Tail Feldera logs.
-  stack-wipe:
-    run: make stack-wipe
-    description: Stop and remove the Feldera container plus its volumes.
 
 # Catalog metadata for the cross-repo knowledge graph.
 # Schema: coilysiren/agentic-os-kai#420 (tracker).
@@ -39,7 +24,7 @@ catalog:
   system: observability
   owner: kai
   lifecycle: experimental
-  description: "Materialized-view service over Claude session data. Pulls from repo-recall, maintains views via Feldera, serves over HTTP to luca."
+  description: "Materialized-view service over Claude session data. Pulls from repo-recall, maintains views in embedded DuckDB, serves over HTTP to luca."
   dependsOn:
     - coilysiren/repo-recall
   providesApis:

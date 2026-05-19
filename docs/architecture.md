@@ -7,9 +7,9 @@ session-lattice is the middle layer of a three-service stack across coilysiren/*
 |  repo-recall   |  <----------------   | session-lattice |  <------------    | luca  |
 |  (Rust)        |    refresh tick      |   (Python)      |   view reads      |  +    |
 |                |                      |                 |                   |  CLI  |
-|  joins +       |                      |   Feldera SQL   |                   |       |
-|  searches +    |                      |   pipelines     |                   |       |
-|  per-source    |                      |   (IVM engine)  |                   |       |
+|  joins +       |                      |   DuckDB        |                   |       |
+|  searches +    |                      |   (embedded,    |                   |       |
+|  per-source    |                      |    columnar)    |                   |       |
 |  caches        |                      |                 |                   |       |
 +----------------+                      +-----------------+                   +-------+
 ```
@@ -24,26 +24,37 @@ session-lattice treats repo-recall as read-only. Never writes back.
 
 ### session-lattice (this repo)
 
-Pulls row-shaped data from repo-recall on a refresh tick. Pushes rows into Feldera, where SQL pipelines define materialized views. Serves view reads over its own HTTP API.
+Pulls row-shaped data from repo-recall on a refresh tick. Loads rows into DuckDB, where SQL defines a catalog of materialized views (`CREATE OR REPLACE TABLE view_x AS SELECT ...` on each tick). Serves view reads over its own HTTP API on `localhost:7778`.
 
-Each materialized view is an **inverted index** persisted as a Feldera SQL view. The first one is `tool_sessions` (`tool_name -> [session_id]`). The rationale for using inverted indexes as the primary lookup shape is in [decisions.md](decisions.md).
+DuckDB runs embedded inside the Python service process. One .duckdb file at `~/.session-lattice/session-lattice.duckdb` holds the base tables and the materialized view tables. Refresh-tick writes are transactional, so luca readers see either pre-tick or post-tick state, never a torn intermediate.
 
-Feldera's value-add is incremental view maintenance: views update as base rows arrive, not on a full rebuild. At session-lattice's data volume this is overkill on paper, but it is the right specialist engine for this workload's shape (the alternative was a general-purpose analytical DB with scheduled `CREATE TABLE AS SELECT` snapshots, which works but is less aligned with the "materialized views as a foundational concept" framing).
+Each materialized view is an **inverted index** persisted as a DuckDB table. The first one is `tool_sessions` (`tool_name -> [session_id]`). The rationale for using inverted indexes as the primary lookup shape is in the README.
+
+The 1.0 view catalog targets 18-25 views across five axes: session metadata pivots, tool-call pivots, file-axis joins (the load-bearing session × file metadata blowup), commit/PR/issue attribution, and cross-axis temporal joins (`session_blast_radius`, `file_history_at_session_time`).
 
 ### luca (downstream)
 
 Stateless. Queries session-lattice's HTTP API, runs analytical skills against the view results, produces digests. No persistent storage in luca. See `coilysiren/luca` for the consumer side.
 
-## What was retired
+## Why DuckDB
 
-- The Claude Code `PostToolUse` hook as an ingest path. The hook captured a strict subset of what the Claude session JSONL files already contain. Repo-recall reads the JSONL directly.
-- The `OTel collector to VictoriaMetrics` path. The metric-shaped view of tool activity is replaced by SQL views over rows.
-- Grafana as the human-facing view layer. See decisions.md for the future direction.
-- `coilysiren/otel-a2a-relay` (the predecessor repo) is archived. Its relay-shaped identity does not survive into session-lattice.
+The dominant query shape is the four-source temporal join (session events × file touches × commits-at-that-moment × issue cross-refs). Columnar storage and vectorized execution are the right specialist fit. The data volume sits comfortably inside one process on one host. Cron-tick refresh with `CREATE OR REPLACE TABLE` is fast enough at this scale that incremental view maintenance isn't earning anything.
+
+If the refresh tick later drops below full-rebuild cost, the escape hatch is Postgres + `pg_ivm`. Schema and SQL port across with minimal rewriting.
+
+## Inspection surface
+
+DuckDB UI attaches read-only to the live database file. Default invocation:
+
+```
+duckdb -readonly ~/.session-lattice/session-lattice.duckdb -ui
+```
+
+Opens a web console on `localhost:4213` for ad-hoc SQL against the view catalog. Service keeps running while the UI is attached.
 
 ## Caching contract
 
-End-to-end staleness is the sum of repo-recall's per-source TTL and session-lattice's per-view refresh tick. Document the per-view refresh interval next to the view definition. The CLI exposes a `freshness` field on every view-read response so consumers can decide whether to retry.
+End-to-end staleness is the sum of repo-recall's per-source TTL and session-lattice's per-view refresh tick. Document the per-view refresh interval next to the view definition. The HTTP API exposes a `freshness` field on every view-read response so consumers can decide whether to retry.
 
 ## Naming rationale
 

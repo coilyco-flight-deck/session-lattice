@@ -4,13 +4,13 @@ See `../AGENTS.md` for workspace-level conventions (git workflow, test/lint auto
 
 ## What this is
 
-Materialized-view service. Pulls Claude-session row data from `coilysiren/repo-recall` on a refresh tick, maintains a lattice of views inside Feldera (DBSP, incremental view maintenance), exposes the views via HTTP for `coilysiren/luca` and other consumers.
+Materialized-view service. Pulls Claude-session row data from `coilysiren/repo-recall` on a refresh tick, maintains a catalog of views inside DuckDB (embedded in-process), exposes the views via HTTP for `coilysiren/luca` and other consumers.
 
 ## Layering rules
 
 - Upstream: repo-recall. Pull only. Never push.
 - Downstream: luca, plus any future consumer of HTTP view reads.
-- Side-stream: Feldera. Embedded engine. Treat its SQL pipeline definitions as part of this repo's source.
+- Storage: DuckDB file at `~/.session-lattice/session-lattice.duckdb`. Embedded in the service process. Refresh worker holds the read-write handle, HTTP handlers open read-only handles.
 
 ## Caching
 

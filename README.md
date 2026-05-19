@@ -10,11 +10,25 @@ Three-layer architecture across coilysiren/*:
 
 See [docs/architecture.md](docs/architecture.md) for the design rationale.
 
+## Install
+
+```sh
+brew tap coilysiren/session-lattice https://github.com/coilysiren/session-lattice
+brew install coilysiren/session-lattice/session-lattice
+brew services start session-lattice
+```
+
+The explicit-URL `brew tap` form is required because this repo isn't `homebrew-*` prefixed.
+
+session-lattice needs `coilysiren/tap/repo-recall` running on `localhost:7777` to be useful. The DuckDB UI extension attaches read-only to the live database file for ad-hoc SQL:
+
+```sh
+duckdb -readonly ~/.session-lattice/session-lattice.duckdb -ui
+```
+
 ## Status
 
 Pre-cable. Repo scaffolded, no service yet. Replaces the archived `coilysiren/otel-a2a-relay`.
-
-The view-inspection surface is the DuckDB UI extension, attached read-only to the live database file (`duckdb -readonly ~/.session-lattice/session-lattice.duckdb -ui`). Service runs concurrently. No separate dashboard layer.
 
 ## See also
 

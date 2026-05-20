@@ -107,6 +107,9 @@ class SessionLattice < Formula
     virtualenv_install_with_resources
   end
 
+  # Default service binds the session-lattice-staging mcporter slot on 127.0.0.1:7778.
+  # Prod runs on kai-server via the same formula; dev runs from checkout
+  # via `make watch` on a different port. See /AGENTS.md.
   service do
     run [opt_bin/"session-lattice", "serve"]
     keep_alive true

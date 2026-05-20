@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from session_lattice import db, refresh
+from session_lattice import db, refresh, views
 from session_lattice._version import __version__
 from session_lattice.config import Config
 
@@ -30,16 +30,12 @@ def _register_read_routes(app: FastAPI, config: Config) -> None:
 
     @app.get("/views")
     def list_views() -> dict[str, list[str]]:
-        con = db.open_ro(config.db_path)
-        try:
-            rows = con.execute(
-                "SELECT table_name FROM information_schema.tables "
-                "WHERE table_schema = 'main' AND table_name NOT LIKE 'meta_%' "
-                "ORDER BY table_name"
-            ).fetchall()
-        finally:
-            con.close()
-        return {"views": [r[0] for r in rows]}
+        # Discovery surface for downstream consumers: only the materialized
+        # views this service publishes, sourced from views.ALL so it stays in
+        # sync with what refresh._tick materializes. Puller-written base
+        # tables (sessions, tool_calls, etc.) stay reachable via DuckDB UI
+        # for ad-hoc SQL but don't leak through /views.
+        return {"views": sorted(view.NAME for view in views.ALL)}
 
 
 def create_reads_app(config: Config) -> FastAPI:

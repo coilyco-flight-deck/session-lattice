@@ -2,7 +2,7 @@ class SessionLatticePuller < Formula
   desc "Puller service for session-lattice (companion formula, ships only a brew service)"
   homepage "https://github.com/coilysiren/session-lattice"
   # url/tag/revision are rewritten by the release pipeline at every tag push.
-  url "ssh://git@github.com/coilysiren/session-lattice.git", tag: "v0.6.1", revision: "9c2c7e1f0484d80f06fdec4e066b058995a55064"
+  url "ssh://git@github.com/coilysiren/session-lattice.git", tag: "v0.7.0", revision: "9b04d78ce0b5a08af1026682f9931b7d302a8eaa"
   license "MIT"
   head "https://github.com/coilysiren/session-lattice.git", branch: "main"
 

@@ -26,13 +26,30 @@ def _register_read_routes(app: FastAPI, config: Config) -> None:
         return {"status": "ok", "version": __version__}
 
     @app.get("/views")
-    def list_views() -> dict[str, list[str]]:
+    def list_views() -> dict[str, list[dict[str, object]]]:
         # Discovery surface for downstream consumers: only the materialized
         # views this service publishes, sourced from views.ALL so it stays in
         # sync with what refresh._tick materializes. Puller-written base
         # tables (sessions, tool_calls, etc.) stay reachable via DuckDB UI
-        # for ad-hoc SQL but don't leak through /views.
-        return {"views": sorted(view.NAME for view in views.ALL)}
+        # for ad-hoc SQL but don't leak through /views. Per-view watermark
+        # (last_run_at) reflects the last successful materialization.
+        con = db.open_ro(config.db_path)
+        try:
+            rows = con.execute("SELECT view_name, last_run_at FROM meta_view_watermarks").fetchall()
+        finally:
+            con.close()
+        watermarks = {str(name): ts for name, ts in rows}
+        entries = [
+            {
+                "name": view.NAME,
+                "refresh_interval_seconds": float(view.REFRESH_INTERVAL_SECONDS),
+                "last_run_at": (
+                    watermarks[view.NAME].isoformat() if view.NAME in watermarks else None
+                ),
+            }
+            for view in sorted(views.ALL, key=lambda v: v.NAME)
+        ]
+        return {"views": entries}
 
 
 def create_reads_app(config: Config) -> FastAPI:

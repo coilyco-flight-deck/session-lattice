@@ -1,6 +1,9 @@
 import duckdb
 
 NAME = "tool_sessions"
+# Cheap to materialize (single aggregate over tool_calls), value-per-refresh
+# is high for downstream tool-usage views. Keep on the default minute cadence.
+REFRESH_INTERVAL_SECONDS = 60
 
 
 def materialize(con: duckdb.DuckDBPyConnection) -> int:

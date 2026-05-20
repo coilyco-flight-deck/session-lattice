@@ -27,6 +27,18 @@ def init_schema(con: duckdb.DuckDBPyConnection) -> None:
         )
         """
     )
+    # Per-view watermark: when each registered view last successfully
+    # materialized. Drives the per-view refresh cadence in refresh._tick.
+    # Wiped (or per-row reset) on schema changes; bump REFRESH_INTERVAL_SECONDS
+    # on a view module rather than mutating rows here.
+    con.execute(
+        """
+        CREATE TABLE IF NOT EXISTS meta_view_watermarks (
+            view_name VARCHAR PRIMARY KEY,
+            last_run_at TIMESTAMP NOT NULL
+        )
+        """
+    )
     # Base tables populated by the puller from repo-recall's /api/sessions.
     # Every field on `db::Session` lands here. Atomically replaced each tick
     # so views can pivot on any column without re-pulling.

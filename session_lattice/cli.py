@@ -3,9 +3,16 @@ import logging
 import click
 import uvicorn
 
+from session_lattice import refresh, service
 from session_lattice._version import __version__
 from session_lattice.config import Config
-from session_lattice.service import create_app
+
+
+def _configure_logging() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
 
 
 @click.group()
@@ -16,14 +23,35 @@ def main() -> None:
 
 @main.command()
 def serve() -> None:
-    """Start the HTTP service and refresh worker."""
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
+    """Run reads + puller in one process.
+
+    Transitional. Step 1 of coilysiren/session-lattice#27 will land
+    `serve-reads` and `serve-puller` as separate brew services; this command
+    stays as a wrapper until the formula split lands.
+    """
+    _configure_logging()
     config = Config.from_env()
-    app = create_app(config)
+    app = service.create_combined_app(config)
     uvicorn.run(app, host=config.host, port=config.port, log_config=None)
+
+
+@main.command(name="serve-reads")
+def serve_reads() -> None:
+    """Run the read API only. Opens RO handles to the DuckDB file per request."""
+    _configure_logging()
+    config = Config.from_env()
+    service.bootstrap(config)
+    app = service.create_reads_app(config)
+    uvicorn.run(app, host=config.host, port=config.port, log_config=None)
+
+
+@main.command(name="serve-puller")
+def serve_puller() -> None:
+    """Run the puller only. Holds the RW handle, pulls from repo-recall on tick."""
+    _configure_logging()
+    config = Config.from_env()
+    service.bootstrap(config)
+    refresh.serve_forever(config)
 
 
 if __name__ == "__main__":

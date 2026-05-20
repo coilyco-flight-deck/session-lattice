@@ -4,7 +4,7 @@ import logging
 import signal
 from datetime import UTC, datetime
 
-from session_lattice import db
+from session_lattice import db, puller, views
 from session_lattice.config import Config
 
 log = logging.getLogger(__name__)
@@ -40,11 +40,22 @@ async def run(config: Config, stop_event: asyncio.Event) -> None:
 
 
 def _tick(config: Config) -> None:
+    # Bootstrap-then-pull-then-materialize. The puller atomically replaces
+    # base tables in one transaction; views run after the puller commits.
     con = db.open_rw(config.db_path)
     try:
         db.init_schema(con)
-        # View materialization lands per-view in follow-up commits.
-        # Each view registers its CREATE OR REPLACE TABLE statement against
-        # the base tables that the repo-recall puller will populate.
+    finally:
+        con.close()
+
+    result = puller.pull_and_write(config)
+    if result.skipped_304:
+        return
+
+    con = db.open_rw(config.db_path)
+    try:
+        for view in views.ALL:
+            rows = view.materialize(con)
+            log.info("view %s materialized %d rows", view.NAME, rows)
     finally:
         con.close()

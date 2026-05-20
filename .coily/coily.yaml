@@ -9,6 +9,9 @@ commands:
   watch:
     run: make watch
     description: Run the service from checkout on port 7781 (dev mcporter slot), pointed at repo-recall-dev on 7780. Separate DuckDB home at ~/.session-lattice-dev.
+  smoke-puller:
+    run: uv run python scripts/smoke_puller.py
+    description: One-shot puller smoke. Hits local repo-recall on 7777, writes to ~/.session-lattice-smoke, prints top tool_sessions rows.
   lint:
     run: make lint
     description: Run ruff + mypy.

@@ -110,7 +110,6 @@ class SessionLattice < Formula
   service do
     run [opt_bin/"session-lattice", "serve"]
     keep_alive true
-    working_dir "#{Dir.home}/.session-lattice"
     log_path var/"log/session-lattice.log"
     error_log_path var/"log/session-lattice.err.log"
     environment_variables(

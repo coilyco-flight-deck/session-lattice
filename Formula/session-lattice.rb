@@ -4,7 +4,7 @@ class SessionLattice < Formula
   desc "Materialized-view service over Claude session data (embedded DuckDB)"
   homepage "https://github.com/coilysiren/session-lattice"
   # url/tag/revision are rewritten by the release pipeline at every tag push.
-  url "ssh://git@github.com/coilysiren/session-lattice.git", tag: "v0.5.1", revision: "b17bc2cf4d4fd9198c9450b05d96ab46d039ecf3"
+  url "ssh://git@github.com/coilysiren/session-lattice.git", tag: "v0.5.2", revision: "72badb8beb48ef1b68407041c6dd059341cd51da"
   license "MIT"
   head "https://github.com/coilysiren/session-lattice.git", branch: "main"
 
@@ -107,9 +107,6 @@ class SessionLattice < Formula
     virtualenv_install_with_resources
   end
 
-  # Default service binds the session-lattice-staging mcporter slot on 127.0.0.1:7778.
-  # Prod runs on kai-server via the same formula; dev runs from checkout
-  # via `make watch` on a different port. See /AGENTS.md.
   service do
     run [opt_bin/"session-lattice", "serve"]
     keep_alive true

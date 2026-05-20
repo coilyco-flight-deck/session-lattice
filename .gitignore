@@ -14,3 +14,4 @@ __pycache__/
 .mypy_cache/
 *.egg-info/
 uv.lock
+session_lattice/_version.py

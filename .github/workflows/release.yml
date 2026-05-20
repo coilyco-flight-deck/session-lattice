@@ -74,24 +74,30 @@ jobs:
           revision=$(git rev-parse HEAD)
           echo "revision=$revision" >> "$GITHUB_OUTPUT"
 
-      - name: Rewrite Formula url via Contents API
+      - name: Rewrite Formula urls via Contents API
         env:
           NEW_REVISION: ${{ steps.rev.outputs.revision }}
         run: |
           set -euo pipefail
-          path=Formula/session-lattice.rb
-          tmp=$(mktemp -d)
-          # Fetch the live main version (not the tag's snapshot - we want to
-          # patch on top of the latest formula, including any non-version edits).
-          curl -fsSL \
-            "https://raw.githubusercontent.com/${REPO}/main/${path}" \
-            > "$tmp/session-lattice.rb"
           new_line="  url \"ssh://git@github.com/${REPO}.git\", tag: \"${TAG}\", revision: \"${NEW_REVISION}\""
-          sed -i "s|^  url \".*|${new_line}|" "$tmp/session-lattice.rb"
-          cur_sha=$(gh api "repos/${REPO}/contents/${path}?ref=main" --jq .sha)
-          new_b64=$(base64 -w0 < "$tmp/session-lattice.rb")
-          gh api -X PUT "repos/${REPO}/contents/${path}" \
-            -f message="chore(formula): bump to ${TAG} [skip ci]" \
-            -f content="$new_b64" \
-            -f sha="$cur_sha" \
-            -f branch=main
+          tmp=$(mktemp -d)
+          # Bump both the main formula and the puller companion formula in the
+          # same pass. Both pin the same tag + revision because the puller
+          # formula depends on the binary shipped by the main formula. Each
+          # gets its own Contents API PUT.
+          for path in Formula/session-lattice.rb Formula/session-lattice-puller.rb; do
+            fname=$(basename "$path")
+            # Fetch the live main version (not the tag's snapshot - we want to
+            # patch on top of the latest formula, including any non-version edits).
+            curl -fsSL \
+              "https://raw.githubusercontent.com/${REPO}/main/${path}" \
+              > "$tmp/$fname"
+            sed -i "s|^  url \".*|${new_line}|" "$tmp/$fname"
+            cur_sha=$(gh api "repos/${REPO}/contents/${path}?ref=main" --jq .sha)
+            new_b64=$(base64 -w0 < "$tmp/$fname")
+            gh api -X PUT "repos/${REPO}/contents/${path}" \
+              -f message="chore(formula): bump $fname to ${TAG} [skip ci]" \
+              -f content="$new_b64" \
+              -f sha="$cur_sha" \
+              -f branch=main
+          done

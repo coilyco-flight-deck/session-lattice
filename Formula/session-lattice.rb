@@ -107,27 +107,35 @@ class SessionLattice < Formula
     virtualenv_install_with_resources
   end
 
+  # Reads service binds the session-lattice-staging mcporter slot on 127.0.0.1:7778.
+  # Prod runs on kai-server via the same formula; dev runs from checkout
+  # via `make watch` on a different port. The puller is a separate brew
+  # service shipped by the session-lattice-puller companion formula so
+  # reads and puller can be restarted independently. See /AGENTS.md.
   service do
-    run [opt_bin/"session-lattice", "serve"]
+    run [opt_bin/"session-lattice", "serve-reads"]
     keep_alive true
-    log_path var/"log/session-lattice.log"
-    error_log_path var/"log/session-lattice.err.log"
+    log_path var/"log/session-lattice-reads.log"
+    error_log_path var/"log/session-lattice-reads.err.log"
     environment_variables(
       SESSION_LATTICE_HOME: "#{Dir.home}/.session-lattice",
       SESSION_LATTICE_HOST: "127.0.0.1",
       SESSION_LATTICE_PORT: "7778",
-      SESSION_LATTICE_REPO_RECALL_URL: "http://127.0.0.1:7777",
-      SESSION_LATTICE_REFRESH_INTERVAL_SECONDS: "60",
       PATH: "#{HOMEBREW_PREFIX}/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
     )
   end
 
   def caveats
     <<~EOS
-      To configure session-lattice (port, repo-recall URL, refresh interval, etc.):
+      session-lattice ships two brew services. Start both:
+        brew services start coilysiren/session-lattice/session-lattice
+        brew services start coilysiren/session-lattice/session-lattice-puller
+
+      To configure either service (port, repo-recall URL, refresh interval, etc.):
         brew services edit session-lattice
-        brew services restart session-lattice
-      Edits to the service file persist across `brew upgrade`.
+        brew services edit session-lattice-puller
+        brew services restart <name>
+      Edits to the service files persist across `brew upgrade`.
 
       The DuckDB database file lives at ~/.session-lattice/session-lattice.duckdb.
       Attach the DuckDB UI read-only against the live file:

@@ -15,7 +15,9 @@ See [docs/architecture.md](docs/architecture.md) for the design rationale.
 ```sh
 brew tap coilysiren/session-lattice https://github.com/coilysiren/session-lattice
 brew install coilysiren/session-lattice/session-lattice
+brew install coilysiren/session-lattice/session-lattice-puller
 brew services start session-lattice
+brew services start session-lattice-puller
 ```
 
 The explicit-URL `brew tap` form is required because this repo isn't `homebrew-*` prefixed.

@@ -21,20 +21,6 @@ def main() -> None:
     """session-lattice: materialized-view service over Claude session data."""
 
 
-@main.command()
-def serve() -> None:
-    """Run reads + puller in one process.
-
-    Transitional. Step 1 of coilysiren/session-lattice#27 will land
-    `serve-reads` and `serve-puller` as separate brew services; this command
-    stays as a wrapper until the formula split lands.
-    """
-    _configure_logging()
-    config = Config.from_env()
-    app = service.create_combined_app(config)
-    uvicorn.run(app, host=config.host, port=config.port, log_config=None)
-
-
 @main.command(name="serve-reads")
 def serve_reads() -> None:
     """Run the read API only. Opens RO handles to the DuckDB file per request."""

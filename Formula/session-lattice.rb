@@ -10,6 +10,7 @@ class SessionLattice < Formula
 
   depends_on "duckdb"
   depends_on "python@3.13"
+  depends_on "rust" => :build
 
   # Runtime Python resource blocks. Regenerate after a dep change with:
   #   coily exec sync && coily exec brew-resources

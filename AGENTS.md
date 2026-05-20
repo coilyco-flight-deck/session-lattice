@@ -24,7 +24,7 @@ Never write the literal skip-CI token in a commit message body or you'll silentl
 
 Post-push: verify CI at +300s (`coily ops gh run list --repo coilysiren/session-lattice --limit 1`). Python virtualenv install is slower than a Go binary, so don't poll harder than that. Once `completed/success`: `brew upgrade coilysiren/session-lattice/session-lattice` then `brew services restart session-lattice`. Confirm the service is back by hitting `localhost:7778/healthz` and checking the version field reports the just-released tag. Skip the whole loop for docs-only pushes.
 
-The brew-installed binary IS the contract. No `uv run session-lattice serve` against the real DuckDB file from a checkout, no `pip install -e .` shadowing the brew venv. If a session-lattice fix is needed to unblock other work, fix-session-lattice-first: smallest fix that unblocks, commit + push, wait for the release, `brew upgrade`, return to the original repo.
+The brew-installed binary IS the contract for staging and prod. No `uv run session-lattice serve` against the staging or prod DuckDB file from a checkout, no `pip install -e .` shadowing the brew venv for staging or prod. The dev path is fine: `make watch` runs `uv run session-lattice serve` from the checkout, but points at `SESSION_LATTICE_HOME=~/.session-lattice-dev` (the dev mcporter slot, port 7781), not the brew-managed `~/.session-lattice/`. The intent is "don't trample staging or prod state from a checkout", not "never run from a checkout". If a session-lattice fix is needed to unblock other work, fix-session-lattice-first: smallest fix that unblocks, commit + push, wait for the release, `brew upgrade`, return to the original repo.
 
 ## See also
 

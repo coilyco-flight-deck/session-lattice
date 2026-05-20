@@ -6,6 +6,9 @@ commands:
   sync:
     run: make sync
     description: uv sync the workspace.
+  watch:
+    run: make watch
+    description: Run the service from checkout on port 7781 (dev mcporter slot), pointed at repo-recall-dev on 7780. Separate DuckDB home at ~/.session-lattice-dev.
   lint:
     run: make lint
     description: Run ruff + mypy.

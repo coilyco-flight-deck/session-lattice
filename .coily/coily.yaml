@@ -24,6 +24,9 @@ commands:
   brew-resources:
     run: bash scripts/brew-resources.sh
     description: Print Homebrew resource blocks for the synced uv venv. Pipe between the BEGIN/END RESOURCES markers in Formula/session-lattice.rb.
+  emit-dts:
+    run: uv run scripts/emit_dts.py
+    description: Regenerate session-lattice.d.ts from the FastAPI reads app's OpenAPI schema. Runs automatically via pre-commit; this verb is for manual reruns.
 
 # Catalog metadata for the cross-repo knowledge graph.
 # Schema: coilysiren/agentic-os-kai#420 (tracker).

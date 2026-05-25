@@ -2,11 +2,11 @@ class SessionLattice < Formula
   include Language::Python::Virtualenv
 
   desc "Materialized-view service over Claude session data (embedded DuckDB)"
-  homepage "https://github.com/coilysiren/session-lattice"
+  homepage "https://forgejo.coilysiren.me/coilysiren/session-lattice"
   # url/tag/revision are rewritten by the release pipeline at every tag push.
-  url "ssh://git@github.com/coilysiren/session-lattice.git", tag: "v0.8.1", revision: "a8c4fce7be7ee9bbec3454f142372c63dfec6ccc"
+  url "https://forgejo.coilysiren.me/coilysiren/session-lattice.git", tag: "v0.8.1", revision: "a8c4fce7be7ee9bbec3454f142372c63dfec6ccc"
   license "MIT"
-  head "https://github.com/coilysiren/session-lattice.git", branch: "main"
+  head "https://forgejo.coilysiren.me/coilysiren/session-lattice.git", branch: "main"
 
   depends_on "duckdb"
   depends_on "python@3.13"

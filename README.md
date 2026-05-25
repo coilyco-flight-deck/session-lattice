@@ -13,7 +13,7 @@ See [docs/architecture.md](docs/architecture.md) for the design rationale.
 ## Install
 
 ```sh
-brew tap coilysiren/session-lattice https://github.com/coilysiren/session-lattice
+brew tap coilysiren/session-lattice https://forgejo.coilysiren.me/coilysiren/session-lattice
 brew install coilysiren/session-lattice/session-lattice
 brew install coilysiren/session-lattice/session-lattice-puller
 brew services start session-lattice

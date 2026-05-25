@@ -1,10 +1,10 @@
 class SessionLatticePuller < Formula
   desc "Puller service for session-lattice (companion formula, ships only a brew service)"
-  homepage "https://github.com/coilysiren/session-lattice"
+  homepage "https://forgejo.coilysiren.me/coilysiren/session-lattice"
   # url/tag/revision are rewritten by the release pipeline at every tag push.
-  url "ssh://git@github.com/coilysiren/session-lattice.git", tag: "v0.8.1", revision: "a8c4fce7be7ee9bbec3454f142372c63dfec6ccc"
+  url "https://forgejo.coilysiren.me/coilysiren/session-lattice.git", tag: "v0.8.1", revision: "a8c4fce7be7ee9bbec3454f142372c63dfec6ccc"
   license "MIT"
-  head "https://github.com/coilysiren/session-lattice.git", branch: "main"
+  head "https://forgejo.coilysiren.me/coilysiren/session-lattice.git", branch: "main"
 
   depends_on "coilysiren/session-lattice/session-lattice"
 
@@ -15,7 +15,7 @@ class SessionLatticePuller < Formula
     (prefix/"README.md").write <<~EOS
       Companion formula for session-lattice. Ships only the puller brew
       service; the binary comes from coilysiren/session-lattice/session-lattice.
-      See https://github.com/coilysiren/session-lattice/blob/main/AGENTS.md.
+      See https://forgejo.coilysiren.me/coilysiren/session-lattice/src/branch/main/AGENTS.md.
     EOS
   end
 

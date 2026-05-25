@@ -7,7 +7,7 @@ name: release
 # satisfies the signed-commits ruleset).
 #
 # Brew install path is direct-repo (no aggregator tap):
-#   brew tap coilysiren/session-lattice https://github.com/coilysiren/session-lattice
+#   brew tap coilysiren/session-lattice https://forgejo.coilysiren.me/coilysiren/session-lattice
 #   brew install coilysiren/session-lattice/session-lattice
 #
 # All ${{ }} interpolations are repo-controlled - no github.event.*
@@ -79,7 +79,7 @@ jobs:
           NEW_REVISION: ${{ steps.rev.outputs.revision }}
         run: |
           set -euo pipefail
-          new_line="  url \"ssh://git@github.com/${REPO}.git\", tag: \"${TAG}\", revision: \"${NEW_REVISION}\""
+          new_line="  url \"https://forgejo.coilysiren.me/${REPO}.git\", tag: \"${TAG}\", revision: \"${NEW_REVISION}\""
           tmp=$(mktemp -d)
           # Bump both the main formula and the puller companion formula in the
           # same pass. Both pin the same tag + revision because the puller

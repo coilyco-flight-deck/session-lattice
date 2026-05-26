@@ -10,9 +10,8 @@ log = logging.getLogger(__name__)
 
 
 def bootstrap(config: Config) -> None:
-    # Idempotent: open RW once, ensure the meta schema exists, close. The puller
-    # owns the RW handle in steady state; this is just first-touch so the
-    # `.duckdb` file exists for reads to attach RO against.
+    # Idempotent first-touch: open RW once, ensure the meta schema exists, close.
+    # Puller owns the RW handle in steady state; this just creates the file for RO attach.
     con = db.open_rw(config.db_path)
     try:
         db.init_schema(con)
@@ -27,12 +26,8 @@ def _register_read_routes(app: FastAPI, config: Config) -> None:
 
     @app.get("/views")
     def list_views() -> dict[str, list[dict[str, object]]]:
-        # Discovery surface for downstream consumers: only the materialized
-        # views this service publishes, sourced from views.ALL so it stays in
-        # sync with what refresh._tick materializes. Puller-written base
-        # tables (sessions, tool_calls, etc.) stay reachable via DuckDB UI
-        # for ad-hoc SQL but don't leak through /views. Per-view watermark
-        # (last_run_at) reflects the last successful materialization.
+        # Discovery surface: only views.ALL, so it stays in sync with refresh._tick.
+        # Base tables stay reachable via DuckDB UI but don't leak through /views.
         con = db.open_ro(config.db_path)
         try:
             rows = con.execute("SELECT view_name, last_run_at FROM meta_view_watermarks").fetchall()
@@ -54,10 +49,7 @@ def _register_read_routes(app: FastAPI, config: Config) -> None:
 
 def create_reads_app(config: Config) -> FastAPI:
     # Reads-only FastAPI. Opens RO handles per request. No refresh task.
-    # Assumes the puller (via `serve-puller`) has touched the DuckDB file at
-    # least once. In a fresh checkout the puller's bootstrap runs first; the
-    # reads service tolerates a missing file by surfacing the read error per
-    # request rather than failing at startup.
+    # Tolerates a missing DuckDB by surfacing read errors per request, not at startup.
     app = FastAPI(title="session-lattice-reads", version=__version__)
     _register_read_routes(app, config)
     return app

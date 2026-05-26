@@ -1,14 +1,6 @@
 #!/usr/bin/env bash
-# Print Homebrew `resource` blocks for every runtime Python dependency in
-# the synced .venv. Pipe between the BEGIN/END RESOURCES markers in
-# Formula/session-lattice.rb.
-#
-#   coily exec brew-resources > /tmp/resources
-#   # hand-merge between the markers in Formula/session-lattice.rb
-#
-# Walks installed distributions via importlib.metadata, queries PyPI's
-# JSON API for sdist URL + sha256. No external Python deps - replaces
-# homebrew-pypi-poet, which depends on the deprecated pkg_resources.
+# Print Homebrew `resource` blocks for every runtime Python dep in .venv.
+# Paste between the BEGIN/END RESOURCES markers in Formula/session-lattice.rb.
 
 set -euo pipefail
 

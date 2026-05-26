@@ -10,9 +10,8 @@ from session_lattice.config import Config
 
 log = logging.getLogger(__name__)
 
-# In-process ETag cache keyed by URL. One cache per puller process: a restart
-# always re-pulls on the first tick, which is fine. Persisting to DuckDB would
-# add complexity without buying anything until cold-start times become real.
+# In-process ETag cache keyed by URL. One cache per puller process - a restart re-pulls on
+# the first tick, which is fine until cold-start times become a real problem.
 _etag_cache: dict[str, str | None] = {}
 
 
@@ -114,9 +113,8 @@ def _explode_stop_reasons(session_id: int, raw_json: str) -> list[tuple[int, str
 
 
 def pull_and_write(config: Config) -> PullResult:
-    # Fetch upstream sessions, project Session/SessionWithRepos into row batches,
-    # atomically replace every base table in one transaction so concurrent RO
-    # readers see either pre-tick or post-tick state, never a torn write.
+    # Fetch upstream sessions, project into row batches, atomically replace every
+    # base table in one transaction so RO readers see pre- or post-tick, never torn.
     url = f"{config.repo_recall_url.rstrip('/')}/api/sessions"
 
     headers: dict[str, str] = {}

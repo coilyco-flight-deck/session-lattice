@@ -27,6 +27,12 @@ commands:
   emit-dts:
     run: uv run scripts/emit_dts.py
     description: Regenerate session-lattice.d.ts from the FastAPI reads app's OpenAPI schema. Runs automatically via pre-commit; this verb is for manual reruns.
+  precommit:
+    run: pre-commit run --all-files
+    description: Run the full pre-commit suite across the repo. Use for verifying agentic-os hook bumps locally before commit.
+  precommit-code-comments:
+    run: pre-commit run code-comments --all-files
+    description: Run only the code-comments agentic-os hook across the repo.
 
 # Catalog metadata for the cross-repo knowledge graph.
 # Schema: coilysiren/agentic-os-kai#420 (tracker).

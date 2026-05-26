@@ -27,9 +27,8 @@ def serve_forever(config: Config) -> None:
 
 
 def _tick_interval(config: Config) -> float:
-    # Loop heartbeat: min of all view REFRESH_INTERVAL_SECONDS and the global
-    # config knob. Views are gated by their own watermark inside _tick; the
-    # heartbeat just controls how often we check.
+    # Loop heartbeat: min of view REFRESH_INTERVAL_SECONDS and the global config knob.
+    # Views are gated by their own watermark inside _tick; heartbeat just paces the loop.
     intervals = [float(view.REFRESH_INTERVAL_SECONDS) for view in views.ALL]
     intervals.append(config.refresh_interval_seconds)
     return min(intervals)
@@ -70,9 +69,8 @@ def _due_views(watermarks: dict[str, datetime], now: datetime) -> list[ModuleTyp
 
 
 def _tick(config: Config) -> None:
-    # Bootstrap-then-(maybe-pull)-then-materialize-due-views. Skip the
-    # pull+materialize cycle entirely if no view is due; honor the upstream
-    # ETag if at least one is.
+    # Bootstrap, then (maybe-pull) and materialize due views.
+    # Skip pull+materialize entirely if no view is due; honor the upstream ETag otherwise.
     con = db.open_rw(config.db_path)
     try:
         db.init_schema(con)

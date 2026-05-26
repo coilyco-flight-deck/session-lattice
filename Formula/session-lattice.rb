@@ -12,10 +12,9 @@ class SessionLattice < Formula
   depends_on "python@3.13"
   depends_on "rust" => :build
 
-  # Runtime Python resource blocks. Regenerate after a dep change with:
-  #   coily exec sync && coily exec brew-resources
-  # then paste the output between the BEGIN/END markers below.
-  #
+  # Runtime Python resource blocks.
+  # Regenerate via `coily exec sync && coily exec brew-resources`.
+
   # BEGIN RESOURCES (managed by coily exec brew-resources)
   resource "annotated-doc" do
     url "https://files.pythonhosted.org/packages/57/ba/046ceea27344560984e26a590f90bc7f4a75b06701f653222458922b558c/annotated_doc-0.0.4.tar.gz"
@@ -108,10 +107,7 @@ class SessionLattice < Formula
   end
 
   # Reads service binds the session-lattice-staging mcporter slot on 127.0.0.1:7778.
-  # Prod runs on kai-server via the same formula; dev runs from checkout
-  # via `make watch` on a different port. The puller is a separate brew
-  # service shipped by the session-lattice-puller companion formula so
-  # reads and puller can be restarted independently. See /AGENTS.md.
+  # Puller ships as a separate restartable brew service; see /AGENTS.md.
   service do
     run [opt_bin/"session-lattice", "serve-reads"]
     keep_alive true

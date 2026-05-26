@@ -9,9 +9,8 @@ class SessionLatticePuller < Formula
   depends_on "coilysiren/session-lattice/session-lattice"
 
   def install
-    # Companion formula. The binary ships from coilysiren/session-lattice/session-lattice;
-    # this formula exists so brew can host the puller as a separately
-    # restartable service. Install a marker file so brew is happy.
+    # Companion formula. Binary ships from session-lattice; this hosts the
+    # puller as a separately restartable brew service. Marker file keeps brew happy.
     (prefix/"README.md").write <<~EOS
       Companion formula for session-lattice. Ships only the puller brew
       service; the binary comes from coilysiren/session-lattice/session-lattice.

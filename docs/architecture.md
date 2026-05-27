@@ -58,8 +58,8 @@ End-to-end staleness is the sum of repo-recall's per-source TTL and session-latt
 
 ## Naming rationale
 
-Three services, three naming registers:
+Three services, three registers:
 
-- repo-recall: practical action ("the thing that recalls repos")
-- session-lattice: theory ("the lattice of materialized views over session data" - see Harinarayan-Rajaraman-Ullman 1996 on the data-cube lattice)
-- luca: cute name ("luca" is Italian for light)
+- repo-recall: practical action.
+- session-lattice: theory (lattice of materialized views over session data, per Harinarayan-Rajaraman-Ullman 1996).
+- luca: cute name ("luca" is Italian for light).

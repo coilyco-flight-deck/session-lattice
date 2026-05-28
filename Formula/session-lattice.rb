@@ -4,7 +4,7 @@ class SessionLattice < Formula
   desc "Materialized-view service over Claude session data (embedded DuckDB)"
   homepage "https://forgejo.coilysiren.me/coilysiren/session-lattice"
   # url/tag/revision are rewritten by the release pipeline at every tag push.
-  url "https://forgejo.coilysiren.me/coilysiren/session-lattice.git", tag: "v0.10.1", revision: "13f2043f3da211502b05c5a96f722eef12024e90"
+  url "https://forgejo.coilysiren.me/coilysiren/session-lattice.git", tag: "v0.10.2", revision: "d13d56a8c64249cd31fac058868277499ff65be7"
   license "MIT"
   head "https://forgejo.coilysiren.me/coilysiren/session-lattice.git", branch: "main"
 

@@ -44,6 +44,4 @@ catalog:
   lifecycle: experimental
   description: "Materialized-view service over Claude session data. Pulls from repo-recall, maintains views in embedded DuckDB, serves over HTTP to luca."
   dependsOn:
-    - coilysiren/repo-recall
-  providesApis:
-    - session-lattice-views
+    - forgejo.coilysiren.me/coilysiren/repo-recall

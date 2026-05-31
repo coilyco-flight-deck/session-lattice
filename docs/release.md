@@ -19,4 +19,4 @@ The brew-installed binary IS the contract for staging and prod. No `uv run sessi
 - [FEATURES.md](FEATURES.md) - inventory of what ships today.
 - [../.coily/coily.yaml](../.coily/coily.yaml) - allowlisted commands.
 
-Cross-reference convention from [coilysiren/agentic-os#59](https://github.com/coilysiren/agentic-os/issues/59).
+Cross-reference convention from [coilysiren/agentic-os#59](https://github.com/coilyco-flight-deck/agentic-os/issues/59).

@@ -50,4 +50,4 @@ Push to `main` triggers tag + GH Release + formula bump. See [docs/release.md](d
 - [docs/architecture.md](docs/architecture.md) - service-stack diagram and DuckDB rationale.
 - [docs/release.md](docs/release.md) - release pipeline and post-push.
 
-Cross-reference convention from [coilysiren/agentic-os#59](https://github.com/coilysiren/agentic-os/issues/59).
+Cross-reference convention from [coilysiren/agentic-os#59](https://github.com/coilyco-flight-deck/agentic-os/issues/59).

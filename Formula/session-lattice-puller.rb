@@ -2,7 +2,7 @@ class SessionLatticePuller < Formula
   desc "Puller service for session-lattice (companion formula, ships only a brew service)"
   homepage "https://forgejo.coilysiren.me/coilysiren/session-lattice"
   # url/tag/revision are rewritten by the release pipeline at every tag push.
-  url "https://forgejo.coilysiren.me/coilysiren/session-lattice.git", tag: "v0.10.2", revision: "d13d56a8c64249cd31fac058868277499ff65be7"
+  url "https://forgejo.coilysiren.me/coilyco-flight-deck/session-lattice.git", tag: "v0.10.3", revision: "ec990cb9724ba034432909ee077a23f79974ef0c"
   license "MIT"
   head "https://forgejo.coilysiren.me/coilysiren/session-lattice.git", branch: "main"
 

@@ -1,12 +1,12 @@
 # Release
 
-Push to `main` triggers `.github/workflows/release.yml`. `mathieudutour/github-tag-action` computes semver (`default_bump: patch`, conventional commits drive minor/major), tags + cuts a GH Release, then `bump-formula` rewrites the formula's url+tag+revision via the Contents API and pushes back to main with a skip-CI marker. No tap dispatch (see #17 - direct-repo install). `Formula/session-lattice.rb` is the source of truth; brew picks up the new tag on the next `brew upgrade`.
+Push to `main` triggers `.github/workflows/release.yml`. `mathieudutour/github-tag-action` computes semver (`default_bump: patch`, conventional commits drive minor/major), tags + cuts a GH Release, then two formula-bump jobs rewrite the url+tag+revision of both formulae via the Contents API with a skip-CI marker. `bump-tap-formula` pins them in the centralized `coilyco-flight-deck/homebrew-tap` (the primary install path, written via the forgejo Contents API with `HOMEBREW_TAP_TOKEN`); `bump-formula` keeps the in-repo `Formula/*.rb` fresh for one migration cycle as a fallback for the old direct-repo tap. Brew picks up the new tag on the next `brew upgrade`.
 
 Never write the literal skip-CI token in a commit message body or the release workflow silently disables on that push. GitHub greps the entire message, not just the subject line. Quote it as "skip-ci marker" or "skip CI" without brackets when describing it.
 
 ## Post-push
 
-Verify CI at +300s (`coily ops gh run list --repo coilysiren/session-lattice --limit 1`). Python virtualenv install is slower than a Go binary, so don't poll harder than that. Once `completed/success`: `brew upgrade coilysiren/session-lattice/session-lattice coilysiren/session-lattice/session-lattice-puller` then `brew services restart session-lattice session-lattice-puller`. Confirm the reads service is back by hitting `localhost:7778/healthz` and checking the version field reports the just-released tag. Skip the whole loop for docs-only pushes.
+Verify CI at +300s (the release runs on GitHub Actions; the `coily ops gh` Actions surface is playwright-only, so check the GH Release list or the Actions tab). Python virtualenv install is slower than a Go binary, so don't poll harder than that. Once the release is cut: `brew upgrade coilyco-flight-deck/tap/session-lattice coilyco-flight-deck/tap/session-lattice-puller` then `brew services restart session-lattice session-lattice-puller`. Confirm the reads service is back by hitting `localhost:7778/healthz` and checking the version field reports the just-released tag. Skip the whole loop for docs-only pushes.
 
 ## Brew-installed binary is the contract
 

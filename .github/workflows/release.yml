@@ -111,9 +111,9 @@ jobs:
   bump-tap-formula:
     # Centralized monorepo tap: rewrite both Formula/session-lattice*.rb in
     # coilyco-flight-deck/homebrew-tap to pin the just-cut tag + revision.
-    # Cross-host write (github Actions -> forgejo), so it uses the
-    # HOMEBREW_TAP_TOKEN secret (forgejo PAT with write to the tap) rather
-    # than the job's GITHUB_TOKEN. This is the primary install path; the
+    # Cross-host write (github Actions -> forgejo), so it uses FORGEJO_TOKEN
+    # (the org-level forgejo PAT on coilyco-flight-deck that ward also uses
+    # for the tap write) rather than the job's GITHUB_TOKEN. This is the
     # per-repo bump-formula above stays one migration cycle as a fallback
     # for the old direct-repo tap. All ${{ }} interpolations are
     # repo-controlled - no github.event.* untrusted input reaches a run block.
@@ -125,7 +125,7 @@ jobs:
       FORGEJO_BASE_URL: https://forgejo.coilysiren.me
       SRC_REPO: coilyco-flight-deck/session-lattice
       TAP_REPO: coilyco-flight-deck/homebrew-tap
-      FORGEJO_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+      FORGEJO_TOKEN: ${{ secrets.FORGEJO_TOKEN }}
     steps:
       - name: Check out the release tag
         uses: actions/checkout@v4

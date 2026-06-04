@@ -1,6 +1,6 @@
 # Agent instructions
 
-See `../AGENTS.md` for workspace-level conventions (git workflow, test/lint autonomy, readonly ops, writing voice, deploy knowledge). This file covers only what's specific to this repo.
+Workspace conventions load globally via `~/.claude/CLAUDE.md` -> `agentic-os-kai/AGENTS.md`. This file covers only what is specific to this repo.
 
 ## Scope
 
@@ -35,7 +35,7 @@ Inherited from `../AGENTS.md`. Never `--no-verify`. Readonly git and shell comma
 
 ## Release
 
-Push to `main` triggers tag + GH Release + formula bump. See [docs/release.md](docs/release.md) for the full sequence, the skip-CI marker hazard, and the post-push verification + brew upgrade loop.
+Push to `main` triggers tag + GH Release + two formula bumps: `bump-tap-formula` pins both formulae in the central `coilyco-flight-deck/homebrew-tap` (primary install: `brew install coilyco-flight-deck/tap/session-lattice`), and `bump-formula` keeps the in-repo `Formula/*.rb` one migration cycle as a fallback. See [docs/release.md](docs/release.md) for the full sequence, the skip-CI marker hazard, and the post-push verification + brew upgrade loop.
 
 ## Agent rules
 

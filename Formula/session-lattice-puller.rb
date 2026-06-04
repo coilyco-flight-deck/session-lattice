@@ -9,9 +9,9 @@ class SessionLatticePuller < Formula
   depends_on "coilysiren/session-lattice/session-lattice"
 
   def install
-    # Companion formula. Binary ships from session-lattice; this hosts the
-    # puller as a separately restartable brew service. Marker file keeps brew happy.
-    (prefix/"README.md").write <<~EOS
+    # Marker must live in pkgshare, not keg root: brew's empty-installation
+    # check skips top-level metafiles (README via Metafiles.copy?). See #17.
+    (pkgshare/"README.md").write <<~EOS
       Companion formula for session-lattice. Ships only the puller brew
       service; the binary comes from coilysiren/session-lattice/session-lattice.
       See https://forgejo.coilysiren.me/coilysiren/session-lattice/src/branch/main/AGENTS.md.
@@ -34,6 +34,6 @@ class SessionLatticePuller < Formula
   end
 
   test do
-    assert_predicate prefix/"README.md", :exist?
+    assert_predicate pkgshare/"README.md", :exist?
   end
 end

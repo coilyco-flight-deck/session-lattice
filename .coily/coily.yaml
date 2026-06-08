@@ -1,6 +1,4 @@
-# Per-repo command allowlist for session-lattice. The harness denies bare
-# `uv:*` and `make:*` invocations; dev verbs route through coily so each
-# call lands in the audit log.
+# Per-repo command allowlist. Dev verbs route through coily for the audit log.
 
 commands:
   sync:
@@ -34,8 +32,6 @@ commands:
     run: pre-commit run code-comments --all-files
     description: Run only the code-comments agentic-os hook across the repo.
 
-# Catalog metadata for the cross-repo knowledge graph.
-# Schema: coilysiren/agentic-os-kai#420 (tracker).
 catalog:
   kind: Component
   type: service

@@ -1,0 +1,43 @@
+# Per-repo command allowlist. Dev verbs route through coily for the audit log.
+
+commands:
+  sync:
+    run: make sync
+    description: uv sync the workspace.
+  watch:
+    run: make watch
+    description: Run the service from checkout on port 7781 (dev mcporter slot), pointed at repo-recall-dev on 7780. Separate DuckDB home at ~/.session-lattice-dev.
+  smoke-puller:
+    run: uv run python scripts/smoke_puller.py
+    description: One-shot puller smoke. Hits local repo-recall on 7777, writes to ~/.session-lattice-smoke, prints top tool_sessions rows.
+  lint:
+    run: make lint
+    description: Run ruff + mypy.
+  fmt:
+    run: make fmt
+    description: Format with ruff.
+  test:
+    run: make test
+    description: Run pytest. (No tests yet; placeholder until first view lands.)
+  brew-resources:
+    run: bash scripts/brew-resources.sh
+    description: Print Homebrew resource blocks for the synced uv venv. Pipe between the BEGIN/END RESOURCES markers in Formula/session-lattice.rb.
+  emit-dts:
+    run: uv run scripts/emit_dts.py
+    description: Regenerate session-lattice.d.ts from the FastAPI reads app's OpenAPI schema. Runs automatically via pre-commit; this verb is for manual reruns.
+  precommit:
+    run: pre-commit run --all-files
+    description: Run the full pre-commit suite across the repo. Use for verifying agentic-os hook bumps locally before commit.
+  precommit-code-comments:
+    run: pre-commit run code-comments --all-files
+    description: Run only the code-comments agentic-os hook across the repo.
+
+catalog:
+  kind: Component
+  type: service
+  system: observability
+  owner: kai
+  lifecycle: experimental
+  description: "Materialized-view service over Claude session data. Pulls from repo-recall, maintains views in embedded DuckDB, serves over HTTP to luca."
+  dependsOn:
+    - forgejo.coilysiren.me/coilysiren/repo-recall

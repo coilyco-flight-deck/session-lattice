@@ -4,6 +4,8 @@ Push to `main` triggers `.github/workflows/release.yml`. `mathieudutour/github-t
 
 Never write the literal skip-CI token in a commit message body or the release workflow silently disables on that push. GitHub greps the entire message, not just the subject line. Quote it as "skip-ci marker" or "skip CI" without brackets when describing it.
 
+Every `${{ }}` interpolation in `release.yml` is repo-controlled. No `github.event.*` untrusted input flows into a `run` block, so the run steps are safe from injection. Keep it that way when editing the workflow. The `bump-tap-formula` job does a cross-host write (GitHub Actions to forgejo), so it authenticates with the org-level forgejo PAT rather than the job's `GITHUB_TOKEN`.
+
 ## Post-push
 
 Verify CI at +300s (the release runs on GitHub Actions; the `coily ops gh` Actions surface is playwright-only, so check the GH Release list or the Actions tab). Python virtualenv install is slower than a Go binary, so don't poll harder than that. Once the release is cut: `brew upgrade coilyco-flight-deck/tap/session-lattice coilyco-flight-deck/tap/session-lattice-puller` then `brew services restart session-lattice session-lattice-puller`. Confirm the reads service is back by hitting `localhost:7778/healthz` and checking the version field reports the just-released tag. Skip the whole loop for docs-only pushes.

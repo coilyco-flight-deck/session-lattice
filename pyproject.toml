@@ -51,3 +51,9 @@ version-file = "session_lattice/_version.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["session_lattice"]
+
+# The only code-comments holdout is .pre-commit-config.yaml's `# BEGIN/END
+# managed by agentic-os` markers. apply-agentic-os-hooks.py greps for them to
+# refresh the block idempotently, so they are generated and cannot be removed.
+[tool.agentic-os.code-comments]
+excludes = [".pre-commit-config.yaml"]

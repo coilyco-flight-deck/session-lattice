@@ -18,11 +18,11 @@ Embedded DuckDB inside a Python service process. One file at `~/.session-lattice
 
 ## Commands
 
-Route every dev command through coily, which reads [`.coily/coily.yaml`](.coily/coily.yaml). Inherited from `../AGENTS.md`.
+Route every dev command through ward, which reads [`.ward/ward.yaml`](.ward/ward.yaml) (run verbs with `ward exec <verb>`). Inherited from `../AGENTS.md`.
 
 ## Validation
 
-`pre-commit` runs the agentic-os hook suite plus `emit-dts` (regenerates `session-lattice.d.ts` from the FastAPI reads app's OpenAPI schema). Manual regen: `coily exec emit-dts`.
+`pre-commit` runs the agentic-os hook suite plus `emit-dts` (regenerates `session-lattice.d.ts` from the FastAPI reads app's OpenAPI schema). Manual regen: `ward exec emit-dts`.
 
 ## Safety
 
@@ -46,7 +46,8 @@ Push to `main` triggers tag + GH Release + two formula bumps: `bump-tap-formula`
 
 - [README.md](README.md) - human-facing intro.
 - [docs/FEATURES.md](docs/FEATURES.md) - inventory of what ships today.
-- [.coily/coily.yaml](.coily/coily.yaml) - allowlisted commands.
+- [.ward/ward.yaml](.ward/ward.yaml) - allowlisted commands (`ward exec <verb>`).
+- [.coily/coily.yaml](.coily/coily.yaml) - retained during migration.
 - [docs/architecture.md](docs/architecture.md) - service-stack diagram and DuckDB rationale.
 - [docs/release.md](docs/release.md) - release pipeline and post-push.
 

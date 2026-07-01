@@ -1,24 +1,5 @@
 name: release
 
-# Tag-only release on every push to main. Conventional commits drive the
-# semver bump. Tag is created at the pushed commit, GH Release is cut with
-# the auto-generated changelog, then two formula-bump jobs rewrite the
-# url+tag+revision line of both formulae via the Contents API.
-#
-# Brew now installs from the centralized flight-deck tap:
-#   brew tap coilyco-flight-deck/tap https://forgejo.coilysiren.me/coilyco-flight-deck/homebrew-tap
-#   brew install coilyco-flight-deck/tap/session-lattice
-#
-# bump-tap-formula writes that central tap (on forgejo). The per-repo
-# bump-formula keeps the in-repo Formula/*.rb fresh for one migration cycle
-# as a fallback for the old direct-repo tap:
-#   brew tap coilyco-flight-deck/session-lattice https://forgejo.coilysiren.me/coilyco-flight-deck/session-lattice
-#   brew install coilyco-flight-deck/session-lattice/session-lattice
-# Drop bump-formula + the in-repo Formula/*.rb next release cycle.
-#
-# All ${{ }} interpolations are repo-controlled - no github.event.*
-# untrusted input flows into a run block.
-
 on:
   push:
     branches: [main]
@@ -54,10 +35,6 @@ jobs:
           body: ${{ steps.tag.outputs.changelog }}
 
   bump-formula:
-    # Rewrite Formula/session-lattice.rb's url line to point at the just-cut
-    # tag + revision. Brew reads the formula from the tap clone (latest main),
-    # so the rewrite has to land back here. Commit message carries [skip ci]
-    # so this push doesn't re-trigger the release workflow.
     needs: release
     if: ${{ needs.release.outputs.tag != '' }}
     runs-on: ubuntu-latest
@@ -109,14 +86,6 @@ jobs:
           done
 
   bump-tap-formula:
-    # Centralized monorepo tap: rewrite both Formula/session-lattice*.rb in
-    # coilyco-flight-deck/homebrew-tap to pin the just-cut tag + revision.
-    # Cross-host write (github Actions -> forgejo), so it uses FORGEJO_TOKEN
-    # (the org-level forgejo PAT on coilyco-flight-deck that ward also uses
-    # for the tap write) rather than the job's GITHUB_TOKEN. This is the
-    # per-repo bump-formula above stays one migration cycle as a fallback
-    # for the old direct-repo tap. All ${{ }} interpolations are
-    # repo-controlled - no github.event.* untrusted input reaches a run block.
     needs: release
     if: ${{ needs.release.outputs.tag != '' }}
     runs-on: ubuntu-latest
